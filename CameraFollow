@@ -1,0 +1,51 @@
+using UnityEngine;
+
+public class CameraFollow : MonoBehaviour
+{
+    [Header("Target & Offset")]
+    public Transform target;
+    public Vector3 offset = new Vector3(0, 3, -5);
+
+    [Header("Mouse Settings")]
+    public float mouseSensitivity = 100f;
+    public float pitchMin = -20f;
+    public float pitchMax = 80f;
+
+    private float yaw = 0f;
+    private float pitch = 20f;
+
+    void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        Vector3 angles = transform.eulerAngles;
+        yaw = angles.y;
+        pitch = angles.x;
+    }
+
+    void LateUpdate()
+    {
+        // 1) lê entrada do mouse
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+
+        // 2) atualiza yaw/pitch e aplica limites no pitch
+        yaw   += mouseX;
+        pitch -= mouseY;
+        pitch = Mathf.Clamp(pitch, pitchMin, pitchMax);
+
+        // 3) cria rotação desejada com base em yaw/pitch
+        Quaternion rotation = Quaternion.Euler(pitch, yaw, 0f);
+
+        // 4) posiciona a câmera usando offset rotacionado
+        Vector3 desiredPos = target.position + rotation * offset;
+        transform.position = desiredPos;
+
+        // 5) faz a câmera olhar para o alvo
+        transform.LookAt(target.position);
+
+        // 6) sincroniza o giro do personagem: só ajustamos o yaw (eixo Y)
+        target.rotation = Quaternion.Euler(0f, yaw, 0f);
+    }
+}
