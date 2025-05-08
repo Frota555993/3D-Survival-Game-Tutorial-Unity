@@ -1,0 +1,15 @@
+using UnityEngine;
+
+public class PickupItem : MonoBehaviour
+{
+    public string itemName = "DefaultItem";
+
+    void OnInteract()
+    {
+        Debug.Log($"Pegou o item: {itemName}");
+        // Chama o alerta de UI
+        if (UIManager.Instance != null)
+            UIManager.Instance.ShowPickupAlert($"Pegou: {itemName}");
+        Destroy(gameObject);
+    }
+}
