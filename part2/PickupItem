@@ -1,0 +1,14 @@
+using UnityEngine;
+
+public class PickupItem : MonoBehaviour
+{
+    public string itemName = "DefaultItem";
+
+    // Será chamado pelo SendMessage
+    void OnInteract()
+    {
+        Debug.Log($"Pegou o item: {itemName}");
+        // TODO: adicionar ao inventário, play de som, etc.
+        Destroy(gameObject);
+    }
+}
