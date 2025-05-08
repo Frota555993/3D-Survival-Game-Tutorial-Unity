@@ -1,0 +1,53 @@
+using UnityEngine;
+using UnityEngine.UI;
+using System.Collections;
+
+public class UIManager : MonoBehaviour
+{
+    public static UIManager Instance;
+
+    [Header("Alerta de Pickup")]
+    public Text pickupText;        // arraste aqui o Text do Canvas
+    public float displayTime = 1.5f;
+    public float fadeSpeed = 2f;
+
+    void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
+
+    public void ShowPickupAlert(string message)
+    {
+        StopAllCoroutines();
+        StartCoroutine(PickupRoutine(message));
+    }
+
+    IEnumerator PickupRoutine(string message)
+    {
+        pickupText.text = message;
+        // Fade in
+        for (float t = 0; t < 1; t += Time.deltaTime * fadeSpeed)
+        {
+            SetAlpha(t);
+            yield return null;
+        }
+        SetAlpha(1);
+        // Aguarda
+        yield return new WaitForSeconds(displayTime);
+        // Fade out
+        for (float t = 1; t > 0; t -= Time.deltaTime * fadeSpeed)
+        {
+            SetAlpha(t);
+            yield return null;
+        }
+        SetAlpha(0);
+    }
+
+    void SetAlpha(float a)
+    {
+        Color c = pickupText.color;
+        c.a = a;
+        pickupText.color = c;
+    }
+}
