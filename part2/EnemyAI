@@ -1,0 +1,59 @@
+using UnityEngine;
+
+public class EnemyAI : MonoBehaviour
+{
+    [Header("Referências")]
+    public Transform player;
+
+    [Header("Parâmetros")]
+    public float detectionRange = 10f;
+    public float moveSpeed = 3f;
+    public float returnSpeed = 2f; // velocidade de volta ao ponto inicial
+
+    private Vector3 startPosition;
+
+    void Start()
+    {
+        startPosition = transform.position;
+    }
+
+    void Update()
+    {
+        float dist = Vector3.Distance(transform.position, player.position);
+
+        if (dist <= detectionRange)
+        {
+            // Caça o jogador
+            Chase(player.position, moveSpeed);
+        }
+        else
+        {
+            // Volta ao ponto inicial
+            if (Vector3.Distance(transform.position, startPosition) > 0.1f)
+                Chase(startPosition, returnSpeed);
+        }
+    }
+
+    void Chase(Vector3 targetPos, float speed)
+    {
+        // Move na horizontal apenas
+        Vector3 dir = (targetPos - transform.position).normalized;
+        dir.y = 0;
+        transform.position += dir * speed * Time.deltaTime;
+
+        // Olha na direção do alvo
+        if (dir != Vector3.zero)
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                Quaternion.LookRotation(dir),
+                Time.deltaTime * 5f
+            );
+    }
+
+    // Visualização do raio de detecção
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, detectionRange);
+    }
+}
